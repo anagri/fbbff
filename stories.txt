@@ -1,0 +1,27 @@
+Master Story List -
+
+#1 - As a user, I want to select a friend so that I can see further details for the selected friend
+acceptance criteria - 
+1. Given - I am logged in to the application via Facebook
+When - I come to the landing page
+Then - I should see the list of my friends
+
+2. Given - I am on landing page and list of friends are displayed
+When - I select one of my friends that I want to find out more about
+Then - I should be taken to more details page for that friend
+
+Technical Details & Limitations - 
+Cannot use FBML selectors for selecting a friend.
+
+#2 - As a user, I want to see the rank of people based on frequency of comments on the post by selected friend so that I know more about that friend
+acceptance criteria - 
+1. Given - I have selected a friend
+When - I go to the analysis page for the selected friend
+Then - I see the rank of friends based on the frequency of comments on the post by selected friend
+
+Technical Details & Limitations -
+Retrieve only 100 recent posts for the selected friend
+This should be parameterized.
+
+
+
