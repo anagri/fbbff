@@ -16,6 +16,11 @@ class FacebookController < ApplicationController
     end
   end
 
+  def bff
+    job = current_user.find_bff(params['bff']['selected_friend'])
+    session[current_user.uid]['job'] = job.id
+  end
+
   protected
 
     def logged_in?
@@ -38,6 +43,7 @@ class FacebookController < ApplicationController
       if fb_user_info = @oauth.get_user_info_from_cookie(cookies)
         @graph = Koala::Facebook::GraphAPI.new(fb_user_info['access_token'])
         @user = User.new(@graph, fb_user_info['user_id'])
+        session[@user.uid] ||= {}
       end
     end
 end

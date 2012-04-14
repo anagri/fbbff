@@ -1,6 +1,25 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FacebookController do
+  describe 'bff with POST' do
+    before do
+      fb_user_info = {'user_id' => 'test_user_id', 'access_token' => 'test_access_token'}
+      Koala::Facebook::OAuth.
+          should_receive(:new).
+          with(anything, anything).
+          and_return(
+            stub('oauth', :get_user_info_from_cookie => fb_user_info))
+      user_stub = stub('user', 'uid' => 'test_user_id', 'find_bff' => stub('job', 'id' => '1'))
+      User.should_receive(:new).and_return(user_stub)
+    end
+
+    it 'render success' do
+      post :bff, :bff => {:selected_friend => '12345'}
+      response.should be_success
+      session['test_user_id']['job'].should_not be(1)
+    end
+  end
+
   describe 'index with GET' do
     before do
       @user = User.new(mock('graph'), 42)
@@ -57,7 +76,7 @@ describe FacebookController do
       response.should be_success
     end
 
-    context 'when logged in to facebook' do
+    context 'when already logged in to facebook' do
       before do
         @oauth = stub('oauth', :get_user_info_from_cookie => '')
         Koala::Facebook::OAuth.should_receive(:new).and_return(@oauth)
