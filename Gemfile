@@ -35,6 +35,7 @@ gem 'koala'
 gem 'delayed_job'
 
 group :development, :test do
+  gem 'sqlite3'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'ruby-debug'
