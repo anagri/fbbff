@@ -32,6 +32,7 @@ gem 'rails', '3.0.3'
 gem 'haml'
 gem 'haml-rails'
 gem 'koala'
+gem 'delayed_job'
 
 group :development, :test do
   gem 'rspec'
