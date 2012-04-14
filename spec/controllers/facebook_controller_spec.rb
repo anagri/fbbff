@@ -1,22 +1,43 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FacebookController do
-  describe 'bff with POST' do
+  context 'logged in user' do
     before do
       fb_user_info = {'user_id' => 'test_user_id', 'access_token' => 'test_access_token'}
       Koala::Facebook::OAuth.
           should_receive(:new).
           with(anything, anything).
-          and_return(
-            stub('oauth', :get_user_info_from_cookie => fb_user_info))
+          and_return(stub('oauth', :get_user_info_from_cookie => fb_user_info))
       user_stub = stub('user', 'uid' => 'test_user_id', 'find_bff' => stub('job', 'id' => '1'))
       User.should_receive(:new).and_return(user_stub)
     end
 
-    it 'render success' do
-      post :bff, :bff => {:selected_friend => '12345'}
-      response.should be_success
-      session['test_user_id']['job'].should_not be(1)
+    describe 'bff with POST' do
+      it 'render success' do
+        post :bff, :bff => {:selected_friend => '12345'}
+        response.should be_success
+        session['test_user_id']['job'].should == '1'
+      end
+    end
+
+    describe 'bff_status with GET' do
+      before do
+        (session['test_user_id'] = {})['job'] = 1
+      end
+
+      it 'return 307 temporary redirect if the job is pending' do
+        Delayed::Job.should_receive(:find).with(1).and_return(stub('job', 'failed_at' => nil))
+        get :bff_status
+        response.status.should == 307
+      end
+
+      it 'return result if job completed' do
+        Delayed::Job.should_receive(:find).with(1).and_return(nil)
+        FeedResult.should_receive(:find).with('job_id' => 1).and_return('result' => '{"user1"=>10, "user2"=>20}')
+        get :bff_status
+        response.status.should == 200
+        response.body.should == '{"user1"=>10, "user2"=>20}'
+      end
     end
   end
 

@@ -21,6 +21,15 @@ class FacebookController < ApplicationController
     session[current_user.uid]['job'] = job.id
   end
 
+  def bff_status
+    job_id = session[current_user.uid]['job']
+    if Delayed::Job.find(job_id).nil?
+      render :json => FeedResult.find('job_id' => job_id)['result']
+    else
+      render :nothing => true, :status => 307
+    end
+  end
+
   protected
 
     def logged_in?
