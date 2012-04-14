@@ -1,10 +1,61 @@
 require 'spec_helper'
+require File.expand_path(File.dirname(__FILE__) + '/rollover_feed')
 
 describe User do
   before do
     @graph = mock('graph api')
     @uid = 42
     @user = User.new(@graph, @uid)
+  end
+
+  describe 'retrieving bff' do
+    it 'should start background job for processing bff' do
+      # verifying the invocation is going to delayed job
+      # delayed job deletes completed tasks, so cannot rely on records in table
+      job = @user.find_bff('12345')
+      job.class.should == Delayed::Backend::ActiveRecord::Job
+    end
+
+    it 'fetch comments for given friend and do processing' do
+      feed_1 = {
+          "comments" => {
+              "data" => [
+                  {
+                      "id" => "test_user_comment_id",
+                      "from" => {
+                          "name" => "Test User 2",
+                          "id" => "test_user_2_id"
+                      },
+                      "message" => "test message",
+                      "created_time" => "test time"
+                  }
+              ],
+              "count" => 1
+          }
+      }
+      feed_2 = {
+          "comments" => {
+              "data" => [
+                  {
+                      "id" => "test_user_comment_id",
+                      "from" => {
+                          "name" => "Test User 3",
+                          "id" => "test_user_3_id"
+                      },
+                      "message" => "test message",
+                      "created_time" => "test time"
+                  }
+              ],
+              "count" => 1
+          }
+      }
+      rollover_feed = RolloverFeed.new([feed_1, feed_2, feed_1])
+
+      @graph.should_receive(:get_connections).with('12345', 'feed').and_return(nil)
+      RollingFeed.should_receive(:new).with(anything, anything).and_return(rollover_feed) # duck type interface
+      user_comments_count = @user.find_bff_synchronous('12345')
+      user_comments_count.should == {'Test User 2' => 67, 'Test User 3' => 33}
+    end
   end
 
   describe 'retrieving friends' do
