@@ -7,17 +7,13 @@ class FacebookController < ApplicationController
   
   def index
     @likes_by_category = current_user.likes_by_category
+    @friends = current_user.friends
   end
 
   def login
     if logged_in?
       redirect_to :action => :index
     end
-  end
-
-  def friends
-    @friends = current_user.friends(params['search'])
-    render :json => @friends
   end
 
   protected

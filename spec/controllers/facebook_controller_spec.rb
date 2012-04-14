@@ -1,21 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FacebookController do
-  describe 'friends with GET' do
-    before do
-      @oauth_stub = stub('oauth', :get_user_info_from_cookie => stub('fb_user_info', :[] => ''))
-      @user_mock = mock('user')
-      Koala::Facebook::OAuth.should_receive(:new).and_return(@oauth_stub)
-      User.should_receive(:new).and_return(@user_mock)
-    end
-
-    it 'should search for friends with search term' do
-      @user_mock.should_receive(:friends).with('search this').and_return([{'name' => 'friend 1'}, {'name' => 'friend 2'}])
-      get :friends, :search => 'search this'
-      response.body.should == '[{"name":"friend 1"},{"name":"friend 2"}]'
-    end
-  end
-
   describe 'index with GET' do
     before do
       @user = User.new(mock('graph'), 42)
@@ -29,19 +14,27 @@ describe FacebookController do
         user_info = {'access_token' => '1234567890', 'uid' => 42}
         @oauth.should_receive(:get_user_info_from_cookie).and_return(user_info)
         Koala::Facebook::GraphAPI.should_receive(:new).with('1234567890').and_return(@graph)
+
         User.should_receive(:new).and_return(@user)
         @likes = mock('likes')
+        @friends = []
         @user.should_receive(:likes_by_category).and_return(@likes)
-
-        get :index
+        @user.should_receive(:friends).and_return(@friends)
       end
 
-      it do
+      it 'should render the page' do
+        get :index
         response.should be_success
       end
 
       it 'should assign likes' do
+        get :index
         assigns[:likes_by_category].should == @likes
+      end
+
+      it 'should assign friends' do
+        get :index
+        assigns[:friends].should == @friends
       end
     end
 
