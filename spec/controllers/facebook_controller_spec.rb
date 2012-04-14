@@ -1,6 +1,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FacebookController do
+  describe 'friends with GET' do
+    before do
+      @oauth_stub = stub('oauth', :get_user_info_from_cookie => stub('fb_user_info', :[] => ''))
+      @user_mock = mock('user')
+      Koala::Facebook::OAuth.should_receive(:new).and_return(@oauth_stub)
+      User.should_receive(:new).and_return(@user_mock)
+    end
+
+    it 'should search for friends with search term' do
+      @user_mock.should_receive(:friends).with('search this').and_return([{'name' => 'friend 1'}, {'name' => 'friend 2'}])
+      get :friends, :search => 'search this'
+      response.body.should == '[{"name":"friend 1"},{"name":"friend 2"}]'
+    end
+  end
 
   describe 'index with GET' do
     before do
