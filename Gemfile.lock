@@ -35,6 +35,7 @@ GEM
       ZenTest (>= 4.4.1)
     builder (2.1.2)
     columnize (0.3.6)
+    daemons (1.1.8)
     delayed_job (3.0.2)
       activesupport (~> 3.0)
     delayed_job_active_record (0.3.2)
@@ -118,6 +119,7 @@ PLATFORMS
 
 DEPENDENCIES
   autotest
+  daemons
   delayed_job
   delayed_job_active_record
   haml

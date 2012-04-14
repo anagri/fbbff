@@ -34,6 +34,7 @@ gem 'haml-rails'
 gem 'koala'
 gem 'delayed_job'
 gem 'delayed_job_active_record'
+gem 'daemons'
 
 group :development, :test do
   gem 'sqlite3'
