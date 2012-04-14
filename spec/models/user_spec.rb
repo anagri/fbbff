@@ -9,11 +9,11 @@ describe User do
 
   describe 'retrieving friends' do
     before do
-      @graph.should_receive(:get_connections).with(@uid, 'friends', anything()).and_return(['friend 1', 'friend 2'])
+      @graph.should_receive(:get_connections).with(@uid, 'friends', anything()).and_return([{'name' => 'friend 2'}, {'name' => 'friend 1'}])
     end
 
-    it 'return friends returned by api' do
-      @user.friends.should == ['friend 1', 'friend 2']
+    it 'should return friends sorted by name when returned by api' do
+      @user.friends.should == [{'name' => 'friend 1'}, {'name' => 'friend 2'}]
     end
   end
 

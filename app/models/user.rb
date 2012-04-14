@@ -7,7 +7,9 @@ class User
   end
 
   def friends
-    graph.get_connections(uid, 'friends', :fields => 'id, name, picture')
+    graph.get_connections(uid, 'friends', :fields => 'id, name').sort {|f1, f2| f1['name'] <=> f2['name']}
+    #below line used for quick testing
+    #[{'id' => '1', 'name' => 'A'}, {'id' => '2', 'name' => 'B'}]
   end
 
   def likes
