@@ -7,6 +7,16 @@ describe User do
     @user = User.new(@graph, @uid)
   end
 
+  describe 'retrieving friends' do
+    before do
+      @graph.should_receive(:get_connections).with(@uid, 'friends', anything()).and_return(['friend 1', 'friend 2'])
+    end
+
+    it 'return friends returned by api' do
+      @user.friends.should == ['friend 1', 'friend 2']
+    end
+  end
+
   describe 'retrieving likes' do
     before do
       @likes = [

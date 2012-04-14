@@ -6,6 +6,10 @@ class User
     @uid = uid
   end
 
+  def friends
+    graph.get_connections(uid, 'friends', :fields => 'id, name, picture')
+  end
+
   def likes
     @likes ||= graph.get_connections(uid, 'likes')
   end
