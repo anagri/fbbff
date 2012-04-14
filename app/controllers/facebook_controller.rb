@@ -10,6 +10,9 @@ class FacebookController < ApplicationController
   end
 
   def login
+    if logged_in?
+      redirect_to :action => :index
+    end
   end
 
   protected

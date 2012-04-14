@@ -1,4 +1,4 @@
-require 'spec_helper'
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe FacebookController do
 
@@ -45,12 +45,21 @@ describe FacebookController do
   end
 
   describe 'login with GET' do
-    before do
+    it 'should render login page' do
       get :login
+      response.should be_success
     end
 
-    it do
-      response.should be_success
+    context 'when logged in to facebook' do
+      before do
+        @oauth = stub('oauth', :get_user_info_from_cookie => '')
+        Koala::Facebook::OAuth.should_receive(:new).and_return(@oauth)
+      end
+
+      it 'should redirect to index page' do
+        get :login
+        response.should redirect_to(:action => :index)
+      end
     end
   end
 end
