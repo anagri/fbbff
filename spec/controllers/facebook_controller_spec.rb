@@ -56,20 +56,13 @@ describe FacebookController do
         Koala::Facebook::API.should_receive(:new).with('1234567890').and_return(@graph)
 
         User.should_receive(:new).and_return(@user)
-        @likes = mock('likes')
         @friends = []
-        @user.should_receive(:likes_by_category).and_return(@likes)
         @user.should_receive(:friends).and_return(@friends)
       end
 
       it 'should render the page' do
         get :index
         response.should be_success
-      end
-
-      it 'should assign likes' do
-        get :index
-        assigns[:likes_by_category].should == @likes
       end
 
       it 'should assign friends' do
