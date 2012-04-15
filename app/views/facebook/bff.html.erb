@@ -5,7 +5,7 @@
   </tr>
 </table>
 <h2 id="wait_msg">Please wait while your request is being processed ...</h2>
-
+<h4>Processing usually takes about a minute to process.</h4>
 <script type="text/javascript">
     $(function() {
         var template = "{{#result}}<tr><td>{{name}}</td><td>{{count}}</td></tr>{{/result}}";
@@ -30,6 +30,6 @@
                     }
                 },
                 dataType: "json"});
-        }, 1000);
+        }, 10000);
     });
 </script>
