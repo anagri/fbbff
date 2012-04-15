@@ -33,10 +33,10 @@ describe FacebookController do
 
       it 'return result if job completed' do
         Delayed::Job.should_receive(:exists?).with(1).and_return(nil)
-        FeedResult.should_receive(:where).with('job_id = ?', 1).and_return(stub('feed_result', :result => '{"user1"=>10, "user2"=>20}'))
+        FeedResult.should_receive(:where).with('job_id = ?', 1).and_return([stub('feed_result', {:result => '{"result":[{"name":"user1","count":10},{"name":"user2","count":20}]}'})])
         get :bff_job_status
         response.status.should == 200
-        response.body.should == '{"user1"=>10, "user2"=>20}'
+        response.body.should == '{"result":[{"name":"user1","count":10},{"name":"user2","count":20}]}'
       end
     end
   end

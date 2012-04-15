@@ -17,7 +17,7 @@ describe BffFinder do
 
       # then
       feed_result['job_id'].should == 1
-      feed_result['result'].should == "{\"Friend 1\":100,\"Friend 2\":50,\"Friend 3\":50}"
+      feed_result['result'].should == "{\"result\":[{\"name\":\"Friend 1\",\"count\":100},{\"name\":\"Friend 2\",\"count\":50},{\"name\":\"Friend 3\",\"count\":50}]}"
     end
 
     def prepare_test_feed

@@ -8,6 +8,7 @@ class BffFinder
 
   def before(job)
     @job_id = job.id
+    pp "#{Time.now} - started processing job #{@job_id}"
   end
 
   def perform
@@ -18,17 +19,20 @@ class BffFinder
     rolling_feed = RollingFeed.new(paginated_statuses, 100)
     rolling_feed.each do |feed|
       feed_comments = feed['comments']
-
-      return if feed_comments.nil? # can be nil
-
-      feed_comments_rolling_feed = PaginatedComments.new(api, feed_comments)
-      feed_comments_rolling_feed.each do |comment|
-        next if comment.nil?
-        data[comment['from']['name']]+=1
+      if feed_comments.present? # can be nil
+        feed_comments_rolling_feed = PaginatedComments.new(api, feed_comments)
+        feed_comments_rolling_feed.each do |comment|
+          if comment.present?
+            data[comment['from']['name']]+=1
+          end
+        end
       end
     end
 
-    feed_result = FeedResult.create!(:job_id => @job_id, :result => data.to_json)
+    final_result = {"result" => data.inject([]) { |c, e| c << {'name' => e[0], 'count' => e[1]}; c }}.to_json
+
+    feed_result = FeedResult.create!(:job_id => @job_id, :result => final_result)
+    pp "#{Time.now} - finished processing job #{@job_id}"
     feed_result
   end
 end
