@@ -1,14 +1,13 @@
 require 'spec_helper'
-require File.expand_path(File.dirname(__FILE__) + '/rollover_feed')
+require File.expand_path(File.dirname(__FILE__) + '/rollover_array')
 
 describe BffFinder do
   it 'fetch comments for given friend and do processing' do
     # given
-    rollover_feed = prepare_test_feed # test feed with two user's comments
+    rollover_statuses = prepare_test_feed # test feed with two user's comments
 
     @graph = mock('graph')
-    @graph.should_receive(:get_connections).with('12345', 'feed').and_return(nil)
-    RollingFeed.should_receive(:new).with(anything, anything).and_return(rollover_feed) # duck type interface
+    @graph.should_receive(:get_connections).with('12345', 'statuses', :limit => 100).and_return(rollover_statuses)
 
     # when
     @bff_finder = BffFinder.new(@graph, '12345')
@@ -17,43 +16,32 @@ describe BffFinder do
 
     # then
     feed_result['job_id'].should == 1
-    feed_result['result'].should == "{\"Test User 2\":67,\"Test User 3\":33}"
+    feed_result['result'].should == "{\"Friend 1\":100,\"Friend 2\":50,\"Friend 3\":50}"
   end
 
   def prepare_test_feed
-    feed_1 = {
-        "comments" => {
-            "data" => [
-                {
-                    "id" => "test_user_comment_id",
-                    "from" => {
-                        "name" => "Test User 2",
-                        "id" => "test_user_2_id"
-                    },
-                    "message" => "test message",
-                    "created_time" => "test time"
-                }
-            ],
-            "count" => 1
-        }
+    status_1 = {
+        "comments"=> {
+            "data"=>
+                [{"from"=>{"name"=>"Friend 1"}, "message"=>"no"}, {"from"=>{"name"=>"Friend 3", }, "message"=>"yes"}]
+        },
+        "from"=>{
+            "name"=>"My Friend",
+        },
+        "message"=>"foobar",
     }
-    feed_2 = {
-        "comments" => {
-            "data" => [
-                {
-                    "id" => "test_user_comment_id",
-                    "from" => {
-                        "name" => "Test User 3",
-                        "id" => "test_user_3_id"
-                    },
-                    "message" => "test message",
-                    "created_time" => "test time"
-                }
-            ],
-            "count" => 1
-        }
+
+    status_2 = {
+        "comments"=> {
+            "data"=> [{"from"=>{"name"=>"Friend 2"}, "message"=>"no"}, {"from"=>{"name"=>"Friend 1", }, "message"=>"yes"}]
+        },
+        "from"=>{
+            "name"=>"My Friend",
+        },
+        "message"=>"barfoo",
     }
-    rollover_feed = RolloverFeed.new([feed_1, feed_2, feed_1])
+
+    rollover_feed = RolloverArray.new([status_1, status_2], 100)
     rollover_feed
   end
 end

@@ -3,3 +3,28 @@
 </ul>
 <h2 id="wait_msg">Please wait while your request is being processed ...</h2>
 
+<script type="text/javascript">
+    $(function() {
+        var template = "<li><span>${name}</span><span>${count}</span></li>";
+        $.template('commentCountTemplate', template);
+
+        var pollJob = setInterval(function() {
+            $.ajax({
+                url: "bff_job_status",
+                complete: function(req, b, c, d) {
+                    if(req.status == 307) {
+                        $('#wait_msg').toggle();
+                    } else if(req.status == 200) {
+                        var commentCounts = data.d;
+                        $.tmpl("commentCountTemplate", commentCounts).appendTo("#commentCounts");
+                        clearInterval(pollJob);
+                    }
+                },
+                error: function() {
+                    clearInterval(pollJob);
+                    $('#wait_msg').html("<span style=\"color: red\">Your request failed. Please try again later.</span>").show();
+                },
+                dataType: "json"});
+        }, 1000);
+    });
+</script>

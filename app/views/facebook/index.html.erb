@@ -1,8 +1,8 @@
 <h2>Select a Friend:</h2>
-<%= form_for :bff, :url => {:controller => 'facebook', :action => 'bff'} do |f| %>
+<%= form_for :bff, :url => {:controller => 'facebook', :action => 'bff'}, :html => {:method => 'get'} do |f| %>
     <select id="friends_list"
             data-placeholder="Select Friend"
-            name="bff[selected_friend]"
+            name="friend_uid"
     >
       <option value=""></option>
       <% @friends.each do |friend| %>

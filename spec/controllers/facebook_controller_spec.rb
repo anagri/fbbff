@@ -12,29 +12,29 @@ describe FacebookController do
       User.should_receive(:new).and_return(user_stub)
     end
 
-    describe 'bff with POST' do
+    describe 'bff with GET' do
       it 'render success' do
-        post :bff, :bff => {:selected_friend => '12345'}
+        post :bff, :friend_uid => '12345'
         response.should be_success
         session['test_user_id']['job'].should == '1'
       end
     end
 
-    describe 'bff_status with GET' do
+    describe 'bff_job_status with GET' do
       before do
-        (session['test_user_id'] = {})['job'] = 1
+        (session['test_user_id'] ||= {})['job'] = 1
       end
 
       it 'return 307 temporary redirect if the job is pending' do
-        Delayed::Job.should_receive(:find).with(1).and_return(stub('job', 'failed_at' => nil))
-        get :bff_status
+        Delayed::Job.should_receive(:exists?).with(1).and_return(stub('job', 'failed_at' => nil))
+        get :bff_job_status
         response.status.should == 307
       end
 
       it 'return result if job completed' do
-        Delayed::Job.should_receive(:find).with(1).and_return(nil)
-        FeedResult.should_receive(:find).with('job_id' => 1).and_return('result' => '{"user1"=>10, "user2"=>20}')
-        get :bff_status
+        Delayed::Job.should_receive(:exists?).with(1).and_return(nil)
+        FeedResult.should_receive(:where).with('job_id = ?', 1).and_return(stub('feed_result', :result => '{"user1"=>10, "user2"=>20}'))
+        get :bff_job_status
         response.status.should == 200
         response.body.should == '{"user1"=>10, "user2"=>20}'
       end

@@ -16,21 +16,20 @@ class FacebookController < ApplicationController
   end
 
   def bff
-    job = current_user.find_bff(params['bff']['selected_friend'])
+    job = current_user.find_bff(params['friend_uid'])
     session[current_user.uid]['job'] = job.id
   end
 
-  def bff_status
+  def bff_job_status
     job_id = session[current_user.uid]['job']
-    if Delayed::Job.find(job_id).nil?
-      render :json => FeedResult.find('job_id' => job_id)['result']
+    if !Delayed::Job.exists?(job_id)
+      render :json => FeedResult.where('job_id = ?', job_id).result
     else
       render :nothing => true, :status => 307
     end
   end
 
   protected
-
     def logged_in?
       !!@user
     end
@@ -48,6 +47,7 @@ class FacebookController < ApplicationController
     def facebook_auth
       @oauth = Koala::Facebook::OAuth.new(FACEBOOK_APP_ID, FACEBOOK_SECRET_KEY)
       cookies = request.cookies
+      #pp cookies
       if fb_user_info = @oauth.get_user_info_from_cookie(cookies)
         @graph = Koala::Facebook::API.new(fb_user_info['access_token'])
         @user = User.new(@graph, fb_user_info['user_id'])
