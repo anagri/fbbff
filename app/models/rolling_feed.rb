@@ -6,6 +6,12 @@ class RollingFeed
     @total_read = 0
   end
 
+  def each
+    while has_next?
+      yield self.next
+    end
+  end
+
   def has_next?
     @total_read < @max
   end

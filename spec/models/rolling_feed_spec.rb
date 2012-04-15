@@ -1,6 +1,14 @@
 require 'spec_helper'
 
 describe RollingFeed do
+  context 'each' do
+    it 'iterate till the given item count' do
+      c = []
+      RollingFeed.new([1,2,3], 2).each {|i| c << i}
+      c.should == [1, 2]
+    end
+  end
+
   context 'has_next?' do
     it 'should return false if feed read till allowable limit' do
       rolling_feed = RollingFeed.new(['1'], 1)
