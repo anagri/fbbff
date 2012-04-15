@@ -1,19 +1,7 @@
 require 'spec_helper'
-
+require File.expand_path(File.dirname(__FILE__) + '/paginated_array')
 
 describe RollingFeed do
-  class PaginatedArray
-    delegate :[], :count, :size, :to => :@arr
-
-    def initialize(*arr)
-      @arr = arr.first || []
-      @rest = arr[1..-1] || []
-    end
-
-    def next_page
-      PaginatedArray.new(*@rest)
-    end
-  end
 
   context 'each' do
     it 'should iterate till the given item count' do
