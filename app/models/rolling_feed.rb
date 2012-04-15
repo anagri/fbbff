@@ -18,7 +18,7 @@ class RollingFeed
       @feed = @feed.next_page
       @current_index = 0
     end
-    @feed.size != 0 && @total_read < @max
+    @feed.size != 0 && (!@max || @total_read < @max)
   end
 
   def next

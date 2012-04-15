@@ -4,6 +4,7 @@ require 'spec_helper'
 describe RollingFeed do
   class PaginatedArray
     delegate :[], :count, :size, :to => :@arr
+
     def initialize(*arr)
       @arr = arr.first || []
       @rest = arr[1..-1] || []
@@ -23,7 +24,13 @@ describe RollingFeed do
 
     it 'should iterate over all the items' do
       c = []
-      RollingFeed.new(PaginatedArray.new(['1'], ['2'], ['3']), 4).each {|i| c << i}
+      RollingFeed.new(PaginatedArray.new(['1'], ['2'], ['3']), 4).each { |i| c << i }
+      c.should == ['1', '2', '3']
+    end
+
+    it 'should read till end if passed max count as false' do
+      c = []
+      RollingFeed.new(PaginatedArray.new(['1'], ['2'], ['3']), false).each { |i| c << i }
       c.should == ['1', '2', '3']
     end
   end
