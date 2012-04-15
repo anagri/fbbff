@@ -21,26 +21,8 @@ describe BffFinder do
     end
 
     def prepare_test_feed
-      status_1 = {
-          "comments"=> {
-              "data"=>
-                  [{"from"=>{"name"=>"Friend 1"}, "message"=>"no"}, {"from"=>{"name"=>"Friend 3", }, "message"=>"yes"}]
-          },
-          "from"=>{
-              "name"=>"My Friend",
-          },
-          "message"=>"foobar",
-      }
-
-      status_2 = {
-          "comments"=> {
-              "data"=> [{"from"=>{"name"=>"Friend 2"}, "message"=>"no"}, {"from"=>{"name"=>"Friend 1", }, "message"=>"yes"}]
-          },
-          "from"=>{
-              "name"=>"My Friend",
-          },
-          "message"=>"barfoo",
-      }
+      status_1 = {"comments"=> {"data"=> [{"from"=>{"name"=>"Friend 1"}}, {"from"=>{"name"=>"Friend 3", }}]}}
+      status_2 = {"comments"=> {"data"=> [{"from"=>{"name"=>"Friend 2"}}, {"from"=>{"name"=>"Friend 1", }}]}}
 
       rollover_feed = RolloverArray.new([status_1, status_2], 100)
       rollover_feed

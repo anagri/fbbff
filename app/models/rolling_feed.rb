@@ -1,10 +1,9 @@
 class RollingFeed
-  def initialize(feed, max = 100, opts = {})
+  def initialize(feed, max = 100)
     @arr = feed
     @max = max
     @current_index = 0
     @total_read = 0
-    @opts = HashWithIndifferentAccess.new(opts)
   end
 
   def each
@@ -33,11 +32,11 @@ class RollingFeed
 
   private
   def get_next_page
-    @opts[:next_page_call].present? ? @opts[:next_page_call].call(@arr) : @arr.next_page
+    @arr.next_page
   end
 
   def get_data
-    @opts[:data_extractor].present? ? @opts[:data_extractor].call(@arr) : @arr
+    @arr
   end
 
   def get_next_element
