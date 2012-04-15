@@ -38,8 +38,11 @@ gem 'daemons'
 
 group :development, :test do
   gem 'sqlite3'
+  gem 'mysql'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'ruby-debug'
+  gem 'ruby-debug-base'
+  gem 'ruby-debug-ide'
   gem 'autotest'
 end
