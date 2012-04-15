@@ -50,7 +50,7 @@ class FacebookController < ApplicationController
       @oauth = Koala::Facebook::OAuth.new(FACEBOOK_APP_ID, FACEBOOK_SECRET_KEY)
       cookies = request.cookies
       if fb_user_info = @oauth.get_user_info_from_cookie(cookies)
-        @graph = Koala::Facebook::GraphAPI.new(fb_user_info['access_token'])
+        @graph = Koala::Facebook::API.new(fb_user_info['access_token'])
         @user = User.new(@graph, fb_user_info['user_id'])
         session[@user.uid] ||= {}
       end

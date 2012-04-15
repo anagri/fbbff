@@ -53,7 +53,7 @@ describe FacebookController do
       before do
         user_info = {'access_token' => '1234567890', 'uid' => 42}
         @oauth.should_receive(:get_user_info_from_cookie).and_return(user_info)
-        Koala::Facebook::GraphAPI.should_receive(:new).with('1234567890').and_return(@graph)
+        Koala::Facebook::API.should_receive(:new).with('1234567890').and_return(@graph)
 
         User.should_receive(:new).and_return(@user)
         @likes = mock('likes')
