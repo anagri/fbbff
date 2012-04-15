@@ -8,7 +8,7 @@ class BffFinder
 
   def before(job)
     @job_id = job.id
-    pp "#{Time.now} - started processing job #{@job_id}"
+    p "#{Time.now} - started processing job #{@job_id}"
   end
 
   def perform
@@ -32,7 +32,7 @@ class BffFinder
     final_result = {"result" => data.inject([]) { |c, e| c << {'name' => e[0], 'count' => e[1]}; c }}.to_json
 
     feed_result = FeedResult.create!(:job_id => @job_id, :result => final_result)
-    pp "#{Time.now} - finished processing job #{@job_id}"
+    p "#{Time.now} - finished processing job #{@job_id}"
     feed_result
   end
 end
